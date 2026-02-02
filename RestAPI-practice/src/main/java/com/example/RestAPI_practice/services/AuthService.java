@@ -18,9 +18,11 @@ public class AuthService {
     }
 
     public RegisterResponse register(RegisterRequest request){
+
         User user = new User();
         user.setUserName(request.getUserName());
         user.setPassword(request.getPassword());
+
         if(userRepository.findByUsername(user.getUserName()).isPresent())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Username already exists");
 
@@ -31,5 +33,13 @@ public class AuthService {
         return registerResponse;
     }
 
-    
+    public String login(LoginRequest request){
+        User user = userRepository.findByUsername(request.getUserName())
+                .orElseThrow(() ->  new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Invalid username"));
+        if(user.getPassword().equals((request.getPassword()))){
+            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Invalid Password");
+        }
+        return "DUMMY-" + user.getUserId();
+    }
+
 }
